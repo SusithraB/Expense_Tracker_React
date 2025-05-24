@@ -82,10 +82,100 @@ Form inputs
 Transaction list (with color coding)
 
 ## PROGRAM
+```
+import React, { useState } from "react";
 
+export default function ExpenseTracker() {
+  const [transactions, setTransactions] = useState([]);
+  const [description, setDescription] = useState("");
+  const [amount, setAmount] = useState("");
+
+  const handleAddTransaction = (e) => {
+    e.preventDefault();
+    if (!description || !amount) return;
+    const newTransaction = {
+      id: Date.now(),
+      description,
+      amount: parseFloat(amount),
+    };
+    setTransactions([newTransaction, ...transactions]);
+    setDescription("");
+    setAmount("");
+  };
+
+  const handleDeleteTransaction = (id) => {
+    setTransactions(transactions.filter((tx) => tx.id !== id));
+  };
+
+  const income = transactions
+    .filter((tx) => tx.amount > 0)
+    .reduce((acc, tx) => acc + tx.amount, 0);
+
+  const expense = transactions
+    .filter((tx) => tx.amount < 0)
+    .reduce((acc, tx) => acc + tx.amount, 0);
+
+  const balance = income + expense;
+
+  return (
+    <div className="max-w-md mx-auto p-4 bg-white shadow-lg rounded-xl mt-8">
+      <h1 className="text-2xl font-bold text-center mb-4">Expense Tracker</h1>
+      <div className="mb-4">
+        <h2 className="text-xl font-semibold">Balance: ₹{balance.toFixed(2)}</h2>
+        <div className="flex justify-between mt-2">
+          <div className="text-green-600 font-medium">
+            Income: ₹{income.toFixed(2)}
+          </div>
+          <div className="text-red-600 font-medium">
+            Expense: ₹{Math.abs(expense).toFixed(2)}
+          </div>
+        </div>
+      </div>
+      <form onSubmit={handleAddTransaction} className="mb-4">
+        <input
+          type="text"
+          placeholder="Description"
+          value={description}
+          onChange={(e) => setDescription(e.target.value)}
+          className="w-full border p-2 rounded mb-2"
+        />
+        <input
+          type="number"
+          placeholder="Amount (positive or negative)"
+          value={amount}
+          onChange={(e) => setAmount(e.target.value)}
+          className="w-full border p-2 rounded mb-2"
+        />
+        <button type="submit" className="w-full bg-blue-500 text-white p-2 rounded">
+          Add Transaction
+        </button>
+      </form>
+      <ul>
+        {transactions.map((tx) => (
+          <li
+            key={tx.id}
+            className={`flex justify-between items-center mb-2 p-2 border-l-4 rounded ${
+              tx.amount > 0 ? "border-green-500 bg-green-50" : "border-red-500 bg-red-50"
+            }`}
+          >
+            <span>{tx.description}: ₹{tx.amount.toFixed(2)}</span>
+            <button
+              onClick={() => handleDeleteTransaction(tx.id)}
+              className="text-sm text-red-600"
+            >
+              ✕
+            </button>
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+}
+```
 
 ## OUTPUT
 
+![image](https://github.com/user-attachments/assets/b14047d7-49bd-4e5b-ace0-5be26edff9f2)
 
 ## RESULT
 A fully functional React-based Expense Tracker application was successfully developed. 
